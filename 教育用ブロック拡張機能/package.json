@@ -1,0 +1,15 @@
+{
+  "name": "education-blocker",
+  "version": "1.0.0",
+  "description": "教育用ブロック拡張機能",
+  "scripts": {
+    "build": "webpack --mode production --entry ./src/content.js --output-path ./dist --output-filename content.js"
+  },
+  "devDependencies": {
+    "webpack": "^5.99.9",
+    "webpack-cli": "^5.0.1",
+    "firebase": "^11.10.0"
+  },
+  "type": "module"
+}
+
