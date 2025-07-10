@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ORG_ID 登録＆firebase-config.js 生成</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; }
+    input, button, textarea { width: 100%; margin-top: 1rem; font-size: 1rem; }
+    textarea { height: 250px; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>ORG_ID 登録 & firebase-config.js 生成</h1>
+  <input type="text" id="orgId" placeholder="例: org_tokyo_school" />
+  <button onclick="registerOrgId()">ORG_ID を登録して生成</button>
+  <textarea id="output" readonly placeholder="生成された firebase-config.js が表示されます"></textarea>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    // Firebase構成（すでに使用中のもの）
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7d7RqunxZwxyCi5Jm4Cl9yUQNEsPhJFA",
+      authDomain: "education-e3dae.firebaseapp.com",
+      databaseURL: "https://education-e3dae-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "education-e3dae",
+      storageBucket: "education-e3dae.firebasestorage.app",
+      messagingSenderId: "812341725803",
+      appId: "1:812341725803:web:bb576c7fa472e32d113f2e",
+      measurementId: "G-9MLZ2VGJGC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function registerOrgId() {
+      const orgId = document.getElementById("orgId").value.trim();
+      const output = document.getElementById("output");
+      if (!orgId) {
+        alert("ORG_IDを入力してください。");
+        return;
+      }
+
+      const ref = db.ref(`orgRegistry/${orgId}`);
+      ref.get().then(snapshot => {
+        if (snapshot.exists()) {
+          alert("この ORG_ID はすでに使用されています。別のIDを使ってください。");
+          return;
+        } else {
+          // ORG_IDを登録
+          ref.set(true).then(() => {
+            const configJs = `export const firebaseConfig = ${JSON.stringify(firebaseConfig, null, 2)};\n\nexport const ORG_ID = "${orgId}";`;
+            output.value = configJs;
+          }).catch(err => {
+            alert("登録に失敗しました。");
+            console.error(err);
+          });
+        }
+      }).catch(error => {
+        alert("エラーが発生しました。");
+        console.error(error);
+      });
+    }
+  </script>
+</body>
+</html>
+
